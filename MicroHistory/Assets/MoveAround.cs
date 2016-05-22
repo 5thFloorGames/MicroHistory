@@ -10,11 +10,12 @@ public class MoveAround : MonoBehaviour {
 	private VillageCreation creator;
 	private int maxAge;
 	private int age = 0;
-	private Job job;
+	public Job job;
 	private Dictionary<Job, Color> jobToColor = new Dictionary<Job, Color>();
 
 	void Awake(){
 		creator = GameObject.FindGameObjectWithTag("GameController").GetComponent<VillageCreation>();
+		job = randomJob ();
 	}
 
 	// Use this for initialization
@@ -24,10 +25,9 @@ public class MoveAround : MonoBehaviour {
 		jobToColor.Add (Job.Carpenter, Color.yellow);
 		jobToColor.Add (Job.Farmer, Color.blue);
 		jobToColor.Add (Job.Noble, Color.magenta);
-		jobToColor.Add (Job.Mason, Color.white);
+		jobToColor.Add (Job.Priest, Color.white);
 
-		job = randomJob ();
-		GetComponent<Renderer> ().material.color = jobToColor [job];
+		GetComponentInChildren<Renderer> ().material.color = jobToColor [job];
 
 		maxAge = Random.Range (1, creator.currentMaxAge()) + Random.Range(-5, 6);
 		agent = GetComponent<NavMeshAgent> ();
@@ -76,7 +76,7 @@ public class MoveAround : MonoBehaviour {
 		} else if (jobNumber < 80){
 			return Job.Carpenter;
 		} else if (jobNumber < 90){
-			return Job.Mason;
+			return Job.Priest;
 		} else if (jobNumber > 98){
 			return Job.Noble;
 		} else {

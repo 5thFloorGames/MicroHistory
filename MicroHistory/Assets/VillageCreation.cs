@@ -6,11 +6,19 @@ public class VillageCreation : MonoBehaviour {
 
 	private List<Vector3> newVillages = new List<Vector3>();
 	private GameObject village;
+	private GameObject church;
+	private GameObject tower;
 	public float timeScale = 1f;
 	public int maxAge = 40;
-
+	private int churchCount = 0;
+	private int towerCount = 0;
+	private int maxChurches = 3;
+	private int maxTowers = 1;
+	
 	void Awake(){
+		church = Resources.Load<GameObject> ("Church");
 		village = Resources.Load<GameObject> ("Village");
+		tower = Resources.Load<GameObject> ("Tower");
 	}
 
 	// Use this for initialization
@@ -36,5 +44,21 @@ public class VillageCreation : MonoBehaviour {
 
 	public int currentMaxAge(){
 		return maxAge;
+	}
+
+	public void UpgradeVillageToTower(Vector3 position, GameObject village){
+		if (towerCount < maxTowers) {
+			Destroy(village);
+			Instantiate (tower, position, Quaternion.identity);
+			towerCount++;
+		}
+	}
+
+	public void UpgradeVillageToChurch(Vector3 position, GameObject village){
+		if (churchCount < maxChurches) {
+			Destroy(village);
+			Instantiate (church, position, Quaternion.identity);
+			churchCount++;
+		}
 	}
 }

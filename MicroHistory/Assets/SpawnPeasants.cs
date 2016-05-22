@@ -4,6 +4,11 @@ using System.Collections;
 public class SpawnPeasants : MonoBehaviour {
 
 	private GameObject peasant;
+	private VillageCreation creator;
+
+	void Awake(){
+		creator = GameObject.FindGameObjectWithTag("GameController").GetComponent<VillageCreation>();
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +24,12 @@ public class SpawnPeasants : MonoBehaviour {
 	IEnumerator Spawn(){
 		while (true) {
 			yield return new WaitForSeconds(10f);
-			Instantiate (peasant, transform.position, Quaternion.identity);
+			GameObject newPeasant = (GameObject)Instantiate (peasant, transform.position, Quaternion.identity);
+			if(newPeasant.GetComponent<MoveAround>().job == Job.Noble){
+				creator.UpgradeVillageToTower(transform.position, this.gameObject);
+			} else if(newPeasant.GetComponent<MoveAround>().job == Job.Priest){
+				creator.UpgradeVillageToChurch(transform.position, this.gameObject);
+			}
 		}
 	}
 }

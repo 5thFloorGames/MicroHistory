@@ -16,7 +16,7 @@ public class MoveAround : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		maxAge = Random.Range (1, creator.currentMaxAge());
+		maxAge = Random.Range (1, creator.currentMaxAge()) + Random.Range(-5, 6);
 		agent = GetComponent<NavMeshAgent> ();
 		layerMask |= 1 << LayerMask.NameToLayer ("Village");
 		agent.SetDestination(new Vector3 (Random.Range(-4.5f, 4.5f), 0.55f, Random.Range(-4.5f, 4.5f)));
@@ -51,6 +51,6 @@ public class MoveAround : MonoBehaviour {
 	}
 	
 	private bool VillageNearby(){
-		return Physics.OverlapSphere (transform.position, 2f, layerMask).Length > 0;
+		return Physics.OverlapSphere (transform.position, 0.5f + Random.Range(0f,1f), layerMask).Length > 0;
 	}
 }

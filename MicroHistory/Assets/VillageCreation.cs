@@ -21,7 +21,7 @@ public class VillageCreation : MonoBehaviour {
 	private IEnumerator UpdateWorld(){
 		while (true) {
 			yield return new WaitForSeconds(1f);
-			maxAge += Random.Range(-2,4);
+			maxAge += Random.Range(-2,3);
 			Time.timeScale = timeScale;
 			if (newVillages.Count > 0) {
 				Instantiate (village, newVillages [0], Quaternion.identity);

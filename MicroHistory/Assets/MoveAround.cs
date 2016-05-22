@@ -13,17 +13,21 @@ public class MoveAround : MonoBehaviour {
 	public Job job;
 	private Dictionary<Job, Color> jobToColor = new Dictionary<Job, Color>();
 	private string name;
+	private List<string> history = new List<string>();
 
 	void Awake(){
 		creator = GameObject.FindGameObjectWithTag("GameController").GetComponent<VillageCreation>();
 		job = randomJob ();
+
 	}
 
 	// Use this for initialization
 	void Start () {
-		name = creator.randomName ();
-		print (name);
-		jobToColor.Add (Job.Child, Color.red);
+		name = creator.randomPersonName ();
+		history.Add ("Born as " + name + " in " + creator.year);
+		maxAge = Random.Range (1, creator.currentMaxAge()) + Random.Range(-5, 6);
+		history.Add ("Became a " + job + " in " + (creator.year + Random.Range (0, maxAge/2)));
+		jobToColor.Add (Job.Mason, Color.red);
 		jobToColor.Add (Job.Peasant, Color.cyan);
 		jobToColor.Add (Job.Carpenter, Color.yellow);
 		jobToColor.Add (Job.Farmer, Color.blue);
@@ -32,13 +36,21 @@ public class MoveAround : MonoBehaviour {
 
 		GetComponentInChildren<Renderer> ().material.color = jobToColor [job];
 
-		maxAge = Random.Range (1, creator.currentMaxAge()) + Random.Range(-5, 6);
 		agent = GetComponent<NavMeshAgent> ();
 		layerMask |= 1 << LayerMask.NameToLayer ("Village");
 		agent.SetDestination(new Vector3 (Random.Range(-4.5f, 4.5f), 0.55f, Random.Range(-4.5f, 4.5f)));
 		StartCoroutine(NewDestination());
 	}
 
+	public void setHometown(string name){
+		history.Add ("Started living in " + name);
+	}
+
+	public void setFounder(string name){
+		history.Add ("Founded " + name + " in " + creator.year);
+	}
+
+	
 	// Update is called once per frame
 	void Update () {
 
@@ -46,19 +58,29 @@ public class MoveAround : MonoBehaviour {
 
 	public IEnumerator NewDestination(){
 		while (true) {
-			age++; 
+			age += 3; 
 			if(age > maxAge){
 				break;
 			}
 			agent.SetDestination(new Vector3 (Random.Range(-4.5f, 4.5f), 0.55f, Random.Range(-4.5f, 4.5f)));
 			yield return new WaitForSeconds(3f);
 		}
+		history.Add ("Died in " + creator.year);
+		PrintHistory ();
 		Destroy (gameObject);
+	}
+
+	public void PrintHistory(){
+		string writtenHistory = "";
+		foreach (string piece in history) {
+			writtenHistory += piece + '\n';
+		}
+		print (writtenHistory);
 	}
 
 	public void OnCollisionEnter(Collision col){
 		if (col.collider.tag == "Peasant" && !VillageNearby () && !founder) {
-			creator.FoundVillage(col.transform.position);
+			creator.FoundVillage(col.transform.position, this);
 			founder = true;
 		} else {
 			//print ("No village");
@@ -82,7 +104,7 @@ public class MoveAround : MonoBehaviour {
 		} else if (jobNumber > 98){
 			return Job.Noble;
 		} else {
-			return Job.Child;
+			return Job.Mason;
 		}
 	}
 }

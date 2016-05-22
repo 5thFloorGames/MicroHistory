@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class VillageCreation : MonoBehaviour {
 
 	private List<Vector3> newVillages = new List<Vector3>();
+	private List<MoveAround> founders = new List<MoveAround>();
 	private GameObject village;
 	private GameObject church;
 	private GameObject tower;
@@ -16,6 +17,8 @@ public class VillageCreation : MonoBehaviour {
 	private int maxTowers = 1;
 	private List<string> nameList;
 	private List<string> surnameList;
+	private List<string> villageList;
+	public int year = 1;
 	
 	void Awake(){
 		church = Resources.Load<GameObject> ("Church");
@@ -27,6 +30,9 @@ public class VillageCreation : MonoBehaviour {
 		textFile = Resources.Load<TextAsset>("sukunimet"); //C#
 		surnameList = new List<string>();
 		surnameList.AddRange (textFile.text.Split ('\n'));
+		textFile = Resources.Load<TextAsset>("kunnat"); //C#
+		villageList = new List<string>();
+		villageList.AddRange (textFile.text.Split ('\n'));
 	}
 
 	// Use this for initialization
@@ -38,16 +44,22 @@ public class VillageCreation : MonoBehaviour {
 		while (true) {
 			yield return new WaitForSeconds(1f);
 			maxAge += Random.Range(-2,3);
+			year++;
 			Time.timeScale = timeScale;
 			if (newVillages.Count > 0) {
-				Instantiate (village, newVillages [0], Quaternion.identity);
+				GameObject newVillage = (GameObject)Instantiate (village, newVillages [0], Quaternion.identity);
+				string newVillageName = randomVillageName();
+				newVillage.GetComponent<SpawnPeasants>().setName(newVillageName);
+				founders[0].setFounder(newVillageName);
 				newVillages.Clear ();
+				founders.Clear();
 			}
 		}
 	}
 
-	public void FoundVillage(Vector3 location){
+	public void FoundVillage(Vector3 location, MoveAround founder){
 		newVillages.Add (new Vector3 (location.x,0.6f, location.z));
+		founders.Add (founder);
 	}
 
 	public int currentMaxAge(){
@@ -56,21 +68,29 @@ public class VillageCreation : MonoBehaviour {
 
 	public void UpgradeVillageToTower(Vector3 position, GameObject village){
 		if (towerCount < maxTowers) {
+			string villageName = village.GetComponent<SpawnPeasants>().name;
 			Destroy(village);
-			Instantiate (tower, position, Quaternion.identity);
+			GameObject towerObject = (GameObject) Instantiate (tower, position, Quaternion.identity);
+			towerObject.GetComponent<SpawnPeasants>().setName(villageName);
 			towerCount++;
 		}
 	}
 
 	public void UpgradeVillageToChurch(Vector3 position, GameObject village){
 		if (churchCount < maxChurches) {
+			string villageName = village.GetComponent<SpawnPeasants>().name;
 			Destroy(village);
-			Instantiate (church, position, Quaternion.identity);
+			GameObject churchObject = (GameObject) Instantiate (church, position, Quaternion.identity);
+			churchObject.GetComponent<SpawnPeasants>().setName(villageName);
 			churchCount++;
 		}
 	}
 
-	public string randomName(){
+	public string randomPersonName(){
 		return nameList [Random.Range (0, nameList.Count)] + " " + surnameList [Random.Range (0, surnameList.Count)]; 
+	}
+
+	public string randomVillageName(){
+		return villageList [Random.Range(0, villageList.Count)];
 	}
 }

@@ -14,11 +14,19 @@ public class VillageCreation : MonoBehaviour {
 	private int towerCount = 0;
 	private int maxChurches = 3;
 	private int maxTowers = 1;
+	private List<string> nameList;
+	private List<string> surnameList;
 	
 	void Awake(){
 		church = Resources.Load<GameObject> ("Church");
 		village = Resources.Load<GameObject> ("Village");
 		tower = Resources.Load<GameObject> ("Tower");
+		TextAsset textFile = Resources.Load<TextAsset>("etunimet"); //C#
+		nameList = new List<string> ();
+		nameList.AddRange (textFile.text.Split ('\n'));
+		textFile = Resources.Load<TextAsset>("sukunimet"); //C#
+		surnameList = new List<string>();
+		surnameList.AddRange (textFile.text.Split ('\n'));
 	}
 
 	// Use this for initialization
@@ -60,5 +68,9 @@ public class VillageCreation : MonoBehaviour {
 			Instantiate (church, position, Quaternion.identity);
 			churchCount++;
 		}
+	}
+
+	public string randomName(){
+		return nameList [Random.Range (0, nameList.Count)] + " " + surnameList [Random.Range (0, surnameList.Count)]; 
 	}
 }

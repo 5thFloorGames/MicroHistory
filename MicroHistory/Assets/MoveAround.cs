@@ -12,6 +12,7 @@ public class MoveAround : MonoBehaviour {
 	private int age = 0;
 	public Job job;
 	private Dictionary<Job, Color> jobToColor = new Dictionary<Job, Color>();
+	private string name;
 
 	void Awake(){
 		creator = GameObject.FindGameObjectWithTag("GameController").GetComponent<VillageCreation>();
@@ -20,6 +21,8 @@ public class MoveAround : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		name = creator.randomName ();
+		print (name);
 		jobToColor.Add (Job.Child, Color.red);
 		jobToColor.Add (Job.Peasant, Color.cyan);
 		jobToColor.Add (Job.Carpenter, Color.yellow);
@@ -50,7 +53,6 @@ public class MoveAround : MonoBehaviour {
 			agent.SetDestination(new Vector3 (Random.Range(-4.5f, 4.5f), 0.55f, Random.Range(-4.5f, 4.5f)));
 			yield return new WaitForSeconds(3f);
 		}
-		print ("Dying");
 		Destroy (gameObject);
 	}
 

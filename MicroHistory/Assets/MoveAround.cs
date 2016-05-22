@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MoveAround : MonoBehaviour {
 
@@ -9,6 +10,8 @@ public class MoveAround : MonoBehaviour {
 	private VillageCreation creator;
 	private int maxAge;
 	private int age = 0;
+	private Job job;
+	private Dictionary<Job, Color> jobToColor = new Dictionary<Job, Color>();
 
 	void Awake(){
 		creator = GameObject.FindGameObjectWithTag("GameController").GetComponent<VillageCreation>();
@@ -16,6 +19,16 @@ public class MoveAround : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		jobToColor.Add (Job.Child, Color.red);
+		jobToColor.Add (Job.Peasant, Color.cyan);
+		jobToColor.Add (Job.Carpenter, Color.yellow);
+		jobToColor.Add (Job.Farmer, Color.blue);
+		jobToColor.Add (Job.Noble, Color.magenta);
+		jobToColor.Add (Job.Mason, Color.white);
+
+		job = randomJob ();
+		GetComponent<Renderer> ().material.color = jobToColor [job];
+
 		maxAge = Random.Range (1, creator.currentMaxAge()) + Random.Range(-5, 6);
 		agent = GetComponent<NavMeshAgent> ();
 		layerMask |= 1 << LayerMask.NameToLayer ("Village");
@@ -52,5 +65,22 @@ public class MoveAround : MonoBehaviour {
 	
 	private bool VillageNearby(){
 		return Physics.OverlapSphere (transform.position, 0.5f + Random.Range(0f,1f), layerMask).Length > 0;
+	}
+
+	private Job randomJob(){
+		int jobNumber = Random.Range (0, 100);
+		if (jobNumber < 50) {
+			return Job.Peasant;
+		} else if (jobNumber < 65){
+			return Job.Farmer;
+		} else if (jobNumber < 80){
+			return Job.Carpenter;
+		} else if (jobNumber < 90){
+			return Job.Mason;
+		} else if (jobNumber > 98){
+			return Job.Noble;
+		} else {
+			return Job.Child;
+		}
 	}
 }

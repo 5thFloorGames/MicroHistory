@@ -15,6 +15,7 @@ public class MoveAround : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		agent = GetComponent<NavMeshAgent> ();
+		layerMask |= 1 << LayerMask.NameToLayer ("Village");
 		agent.SetDestination(new Vector3 (Random.Range(-4.5f, 4.5f), 0.55f, Random.Range(-4.5f, 4.5f)));
 		StartCoroutine(NewDestination());
 	}
@@ -32,13 +33,16 @@ public class MoveAround : MonoBehaviour {
 	}
 
 	public void OnCollisionEnter(Collision col){
-		if (col.collider.tag == "Peasant" && !VillageNearby() && !founder) {
-			Instantiate(village, transform.position, Quaternion.identity);
+		if (col.collider.tag == "Peasant" && !VillageNearby () && !founder) {
+			Instantiate (village, new Vector3 (transform.position.x, 0.6f, transform.position.z), Quaternion.identity);
 			founder = true;
+			agent.Stop ();
+		} else {
+			print ("No village");
 		}
 	}
 	
 	private bool VillageNearby(){
-		return false;
+		return Physics.OverlapSphere (transform.position, 1f, layerMask).Length > 0;
 	}
 }

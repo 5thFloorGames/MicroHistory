@@ -18,8 +18,8 @@ public class SpawnPeasants : MonoBehaviour {
 
 	IEnumerator Spawn(){
 		while (true) {
-			Instantiate (peasant, transform.position, Quaternion.identity);
 			yield return new WaitForSeconds(10f);
+			Instantiate (peasant, transform.position, Quaternion.identity);
 		}
 	}
 }
